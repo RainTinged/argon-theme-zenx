@@ -256,24 +256,248 @@ function themeoptions_page(){
 							</div>
 						</td>
 					</tr>
-					<tr><th class="subtitle"><h3><?php _e('字体', 'argon');?></h3></th></tr>
-					<tr>
-						<th><label><?php _e('默认字体', 'argon');?></label></th>
-						<td>
-							<div class="radio-h">
-								<?php $argon_font = (get_option('argon_font') == '' ? 'sans-serif' : get_option('argon_font')); ?>
-								<label>
-									<input name="argon_font" type="radio" value="sans-serif" <?php if ($argon_font=='sans-serif'){echo 'checked';} ?>>
-									Sans Serif
-								</label>
-								<label>
-									<input name="argon_font" type="radio" value="serif" <?php if ($argon_font=='serif'){echo 'checked';} ?>>
-									Serif
-								</label>
-							</div>
-							<p class="description"><?php _e('默认使用无衬线字体/衬线字体。', 'argon');?></p>
-						</td>
-					</tr>
+				<tr><th class="subtitle"><h3><?php _e('字体', 'argon');?></h3></th></tr>
+				<tr>
+					<th><label><?php _e('默认字体族', 'argon');?></label></th>
+					<td>
+						<?php $argon_font = (get_option('argon_font') == '' ? 'sans-serif' : get_option('argon_font')); ?>
+						<div class="radio-h">
+							<label>
+								<input name="argon_font" type="radio" value="sans-serif" <?php if ($argon_font=='sans-serif'){echo 'checked';} ?>>
+								Sans Serif
+							</label>
+							<label>
+								<input name="argon_font" type="radio" value="serif" <?php if ($argon_font=='serif'){echo 'checked';} ?>>
+								Serif
+							</label>
+						</div>
+						<p class="description"><?php _e('默认使用无衬线字体/衬线字体。下方的"区域字体分配"将使用此设置为基准。', 'argon');?></p>
+					</td>
+				</tr>
+				<tr>
+					<th><label><?php _e('禁用 Google Fonts', 'argon');?></label></th>
+					<td>
+						<label>
+							<input type="checkbox" name="argon_disable_googlefont" value="true" <?php if (get_option('argon_disable_googlefont') == 'true'){echo 'checked';} ?>/> <?php _e('禁用 Google Fonts 加载', 'argon');?>
+						</label>
+						<p class="description"><?php _e('勾选后将不再加载任何 Google Fonts，仅使用系统自带字体。对中国大陆服务器推荐开启。', 'argon');?></p>
+					</td>
+				</tr>
+				<tr><th class="subtitle"><h3><?php _e('字体大小与间距', 'argon');?></h3></th></tr>
+				<tr>
+					<th><label><?php _e('基准字号', 'argon');?></label></th>
+					<td>
+						<?php $argon_font_size_base = get_option('argon_font_size_base', '16'); ?>
+						<input type="number" name="argon_font_size_base" min="12" max="22" step="1" value="<?php echo $argon_font_size_base; ?>"/> px
+						<p class="description"><?php _e('页面文字的基础大小（默认 16px）。', 'argon');?></p>
+					</td>
+				</tr>
+				<tr>
+					<th><label><?php _e('行高', 'argon');?></label></th>
+					<td>
+						<?php $argon_font_line_height = get_option('argon_font_line_height', '1.7'); ?>
+						<input type="number" name="argon_font_line_height" min="1.2" max="2.5" step="0.05" value="<?php echo $argon_font_line_height; ?>"/>
+						<p class="description"><?php _e('正文行高，默认 1.7。建议范围 1.5 ~ 2.0。', 'argon');?></p>
+					</td>
+				</tr>
+				<tr>
+					<th><label><?php _e('字间距', 'argon');?></label></th>
+					<td>
+						<?php $argon_font_letter_spacing = get_option('argon_font_letter_spacing', '0'); ?>
+						<input type="number" name="argon_font_letter_spacing" min="-0.05" max="0.15" step="0.005" value="<?php echo $argon_font_letter_spacing; ?>"/> em
+						<p class="description"><?php _e('正文字符间距，默认 0。', 'argon');?></p>
+					</td>
+				</tr>
+				<?php
+					$font_library = argon_get_font_library();
+					$region_fonts = argon_get_region_fonts();
+				?>
+				<tr><th class="subtitle"><h3><?php _e('字体库', 'argon');?></h3></th></tr>
+				<tr>
+					<td colspan="2" style="padding-left: 0;">
+						<p class="description" style="margin-left: 16px;"><?php _e('添加可用字体。系统字体无需 URL；Google 字体填 CSS2 链接；自定义字体填 woff2 直链。', 'argon');?></p>
+						<style>
+							.argon-font-table{width:100%;border-collapse:collapse;margin-top:8px;background:#fff;}
+							.argon-font-table th,.argon-font-table td{border:1px solid #ddd;padding:8px 10px;vertical-align:middle;font-size:13px;}
+							.argon-font-table th{background:#f7f7f7;text-align:left;font-weight:600;}
+							.argon-font-table input[type="text"],.argon-font-table input[type="number"],.argon-font-table select{width:100%;box-sizing:border-box;padding:4px 6px;}
+							.argon-font-table .col-name{width:12%;}
+							.argon-font-table .col-family{width:15%;}
+							.argon-font-table .col-type{width:9%;}
+							.argon-font-table .col-url{width:28%;}
+							.argon-font-table .col-weight{width:7%;}
+							.argon-font-table .col-action{width:9%;text-align:center;}
+							.argon-font-table .row-del{color:#b32d2e;cursor:pointer;border:1px solid #b32d2e;background:#fff;padding:3px 10px;border-radius:3px;}
+							.argon-font-table .row-del:hover{background:#b32d2e;color:#fff;}
+							.argon-font-table .apply-all{color:#2271b1;cursor:pointer;border:1px solid #2271b1;background:#fff;padding:3px 8px;border-radius:3px;font-size:12px;white-space:nowrap;}
+							.argon-font-table .apply-all:hover{background:#2271b1;color:#fff;}
+							.argon-add-row-btn{margin-top:10px;background:#2271b1;color:#fff;border:none;padding:6px 14px;border-radius:3px;cursor:pointer;}
+							.argon-add-row-btn:hover{background:#135e96;}
+						</style>
+						<table class="argon-font-table" id="argon_font_library_table">
+							<thead>
+								<tr>
+									<th class="col-name"><?php _e('名称', 'argon');?></th>
+									<th class="col-family">font-family</th>
+									<th class="col-type"><?php _e('类型', 'argon');?></th>
+									<th class="col-url"><?php _e('字体文件 URL', 'argon');?></th>
+									<th class="col-weight"><?php _e('字重', 'argon');?></th>
+									<th class="col-action"><?php _e('操作', 'argon');?></th>
+									<th class="col-action"><?php _e('一键应用', 'argon');?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+									if (empty($font_library)){
+										echo '<tr class="argon-font-row"><td><input type="text" name="argon_font_lib_name[]" value=""/></td>';
+										echo '<td><input type="text" name="argon_font_lib_family[]" value=""/></td>';
+										echo '<td><select name="argon_font_lib_type[]"><option value="woff2">woff2</option><option value="woff">woff</option><option value="truetype">truetype</option><option value="opentype">opentype</option><option value="svg">svg</option><option value="google">Google Fonts</option></select></td>';
+										echo '<td><input type="text" name="argon_font_lib_url[]" value="" placeholder="https://... 或 /wp-content/..."/></td>';
+										echo '<td><input type="number" name="argon_font_lib_weight[]" value="400" min="100" max="900" step="100"/></td>';
+										echo '<td class="col-action"><button type="button" class="row-del">' . __('删除', 'argon') . '</button></td></tr>';
+									} else {
+										foreach ($font_library as $f){
+											$id      = esc_attr($f['id']);
+											$name    = esc_attr(isset($f['name']) ? $f['name'] : '');
+											$family  = esc_attr(isset($f['family']) ? $f['family'] : '');
+											$type    = esc_attr(isset($f['type']) ? $f['type'] : 'woff2');
+											$url     = esc_attr(isset($f['url']) ? $f['url'] : '');
+											$weight  = esc_attr(isset($f['weight']) ? $f['weight'] : '400');
+											echo '<tr class="argon-font-row">';
+											echo '<td><input type="text" name="argon_font_lib_name[]" value="' . $name . '"/></td>';
+											echo '<td><input type="text" name="argon_font_lib_family[]" value="' . $family . '"/></td>';
+											echo '<td><select name="argon_font_lib_type[]">';
+											foreach (array('woff2','woff','truetype','opentype','svg','google') as $opt){
+												$dis = ($opt === 'google') ? 'Google Fonts' : $opt;
+												echo '<option value="' . $opt . '"' . ($type === $opt ? ' selected' : '') . '>' . $dis . '</option>';
+											}
+											echo '</select></td>';
+											echo '<td><input type="text" name="argon_font_lib_url[]" value="' . $url . '" placeholder="https://... 或 /wp-content/..."/></td>';
+										echo '<td><input type="number" name="argon_font_lib_weight[]" value="' . $weight . '" min="100" max="900" step="100"/></td>';
+										echo '<td class="col-action"><button type="button" class="row-del">' . __('删除', 'argon') . '</button></td>';
+										echo '<td class="col-action"><button type="button" class="apply-all" data-font-id="' . $id . '" title="' . __('将该字体应用到下方所有区域', 'argon') . '">' . __('应用到全部', 'argon') . '</button></td>';
+										echo '</tr>';
+										}
+									}
+								?>
+							</tbody>
+						</table>
+						<button type="button" class="argon-add-row-btn" id="argon_add_font_row">+ <?php _e('添加字体库', 'argon');?></button>
+						<input type="hidden" name="argon_font_library" id="argon_font_library_json" value=""/>
+					</td>
+				</tr>
+				<script>
+				(function(){
+					var table = document.getElementById('argon_font_library_table').getElementsByTagName('tbody')[0];
+					document.getElementById('argon_add_font_row').addEventListener('click', function(){
+						var tr = document.createElement('tr');
+						tr.className = 'argon-font-row';
+						tr.innerHTML =
+							'<td><input type="text" name="argon_font_lib_name[]" value=""/></td>' +
+							'<td><input type="text" name="argon_font_lib_family[]" value=""/></td>' +
+							'<td><select name="argon_font_lib_type[]">' +
+								'<option value="woff2">woff2</option>' +
+								'<option value="woff">woff</option>' +
+								'<option value="truetype">truetype</option>' +
+								'<option value="opentype">opentype</option>' +
+							'<option value="svg">svg</option>' +
+								'<option value="google">Google Fonts</option>' +
+							'</select></td>' +
+							'<td><input type="text" name="argon_font_lib_url[]" value="" placeholder="https://... 或 /wp-content/..."/></td>' +
+							'<td><input type="number" name="argon_font_lib_weight[]" value="400" min="100" max="900" step="100"/></td>' +
+							'<td class="col-action"><button type="button" class="row-del"><?php echo esc_js(__("删除", "argon"));?></button></td>' +
+							'<td class="col-action" style="font-size:12px;color:#999;"><?php echo esc_js(__("保存后可用", "argon"));?></td>';
+						table.appendChild(tr);
+					});
+					document.getElementById('argon_font_library_table').addEventListener('click', function(e){
+						if (e.target && e.target.classList.contains('row-del')){
+							var tr = e.target.closest('tr');
+							if (tr) tr.parentNode.removeChild(tr);
+						}
+						if (e.target && e.target.classList.contains('apply-all')){
+							var fontId = e.target.getAttribute('data-font-id');
+							if (!fontId) return;
+							var regionTable = document.querySelector('.argon-region-table');
+							if (!regionTable) return;
+							var selects = regionTable.querySelectorAll('select[name^="argon_region["][name$="[font]"]');
+							selects.forEach(function(sel){
+								sel.value = fontId;
+							});
+						}
+					});
+				})();
+				</script>
+				<tr><th class="subtitle"><h3><?php _e('区域字体分配', 'argon');?></h3></th></tr>
+				<tr>
+					<td colspan="2" style="padding-left: 0;">
+						<p class="description" style="margin-left: 16px;"><?php _e('为每个区域单独指定字体、字号、字重。留空则使用上方全局设置。', 'argon');?></p>
+						<style>
+							.argon-region-table{width:100%;border-collapse:collapse;margin-top:8px;background:#fff;}
+							.argon-region-table th,.argon-region-table td{border:1px solid #ddd;padding:8px 10px;vertical-align:middle;font-size:13px;}
+							.argon-region-table th{background:#f7f7f7;text-align:left;font-weight:600;}
+							.argon-region-table .col-name{width:14%;}
+							.argon-region-table .col-font{width:24%;}
+							.argon-region-table .col-size{width:10%;}
+							.argon-region-table .col-weight{width:12%;}
+							.argon-region-table .col-sel{width:40%;color:#666;font-size:12px;word-break:break-all;}
+							.argon-region-table input[type="number"],.argon-region-table select{width:100%;box-sizing:border-box;padding:4px 6px;}
+						</style>
+						<table class="argon-region-table">
+							<thead>
+								<tr>
+									<th class="col-name"><?php _e('区域', 'argon');?></th>
+									<th class="col-font"><?php _e('字体', 'argon');?></th>
+									<th class="col-size"><?php _e('字号', 'argon');?></th>
+									<th class="col-weight"><?php _e('字重', 'argon');?></th>
+									<th class="col-sel"><?php _e('说明', 'argon');?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+									$weight_options = array(
+										''     => '— 默认 —',
+										'300'  => '300 (Light)',
+										'400'  => '400 (Normal)',
+										'500'  => '500 (Medium)',
+										'600'  => '600 (Semi-Bold)',
+										'700'  => '700 (Bold)',
+										'800'  => '800 (Extra-Bold)',
+										'900'  => '900 (Black)',
+									);
+									foreach ($region_fonts as $rkey => $cfg){
+										$font_v   = $cfg['font'];
+										$size_v   = $cfg['size'];
+										$weight_v = $cfg['weight'];
+										$label    = esc_attr($cfg['label']);
+										$desc     = isset($cfg['desc']) ? esc_attr($cfg['desc']) : '';
+										echo '<tr>';
+										echo '<td>' . $label . '</td>';
+										echo '<td><select name="argon_region[' . $rkey . '][font]">';
+										echo '<option value="">— 默认 —</option>';
+										if (!empty($font_library)){
+											echo '<optgroup label="字体库">';
+											foreach ($font_library as $f){
+												$sel_str = ($font_v === $f['id']) ? ' selected' : '';
+												echo '<option value="' . esc_attr($f['id']) . '"' . $sel_str . '>' . esc_html($f['name']) . '</option>';
+											}
+											echo '</optgroup>';
+										}
+										echo '</select></td>';
+										echo '<td><input type="number" name="argon_region[' . $rkey . '][size]" value="' . esc_attr($size_v) . '" min="10" max="80" step="1" placeholder="px"/></td>';
+										echo '<td><select name="argon_region[' . $rkey . '][weight]">';
+										foreach ($weight_options as $wk => $wname){
+											$sel_str = ($weight_v === $wk) ? ' selected' : '';
+											echo '<option value="' . $wk . '"' . $sel_str . '>' . $wname . '</option>';
+										}
+										echo '</select></td>';
+										echo '<td>' . $desc . '</td>';
+										echo '</tr>';
+									}
+								?>
+							</tbody>
+						</table>
+					</td>
+				</tr>
 					<tr><th class="subtitle"><h3>CDN</h3></th></tr>
 					<tr>
 						<th><label>CDN</label></th>
@@ -1766,17 +1990,7 @@ window.pjaxLoaded = function(){
 							<p class="description"></p>
 						</td>
 					</tr>
-					<tr>
-						<th><label><?php _e('禁用 Google 字体', 'argon');?></label></th>
-						<td>
-							<select name="argon_disable_googlefont">
-								<?php $argon_disable_googlefont = get_option('argon_disable_googlefont'); ?>
-								<option value="false" <?php if ($argon_disable_googlefont=='false'){echo 'selected';} ?>><?php _e('不禁用', 'argon');?></option>
-								<option value="true" <?php if ($argon_disable_googlefont=='true'){echo 'selected';} ?>><?php _e('禁用', 'argon');?></option>
-							</select>
-							<p class="description"><?php _e('Google 字体在中国大陆访问可能会阻塞，禁用可以解决页面加载被阻塞的问题。禁用后，Serif 字体将失效。', 'argon');?></p>
-						</td>
-					</tr>
+
 					<tr>
 						<th><label><?php _e('禁用 Argon 代码块样式', 'argon');?></label></th>
 						<td>
@@ -2228,6 +2442,51 @@ function argon_update_themeoptions(){
 		argon_update_option('argon_enable_immersion_color');
 		argon_update_option('argon_enable_comment_pinning');
 		argon_update_option('argon_show_comment_parent_info');
+
+		//字体管理模块
+		//字体管理 - 字体库（来自 POST 数组 → JSON 存储）
+		$lib_names   = isset($_POST['argon_font_lib_name'])   ? (array) $_POST['argon_font_lib_name']   : array();
+		$lib_familys = isset($_POST['argon_font_lib_family']) ? (array) $_POST['argon_font_lib_family'] : array();
+		$lib_types   = isset($_POST['argon_font_lib_type'])   ? (array) $_POST['argon_font_lib_type']   : array();
+		$lib_urls    = isset($_POST['argon_font_lib_url'])    ? (array) $_POST['argon_font_lib_url']    : array();
+		$lib_weights = isset($_POST['argon_font_lib_weight']) ? (array) $_POST['argon_font_lib_weight'] : array();
+		$lib = array();
+		$count = max(count($lib_names), count($lib_familys), count($lib_urls));
+		for ($i = 0; $i < $count; $i++){
+			$name    = isset($lib_names[$i])   ? trim($lib_names[$i])   : '';
+			$family  = isset($lib_familys[$i]) ? trim($lib_familys[$i]) : '';
+			$type    = isset($lib_types[$i])   ? trim($lib_types[$i])   : 'woff2';
+			$url     = isset($lib_urls[$i])    ? trim($lib_urls[$i])    : '';
+			$weight  = isset($lib_weights[$i]) ? trim($lib_weights[$i]) : '400';
+			if ($name === '' && $family === '' && $url === '') continue;
+			$lib[] = array(
+				'id'     => substr(md5($name . '|' . $family . '|' . $url . '|' . $i), 0, 12),
+				'name'   => $name,
+				'family' => $family,
+				'type'   => $type,
+				'url'    => $url,
+				'weight' => $weight,
+			);
+		}
+		update_option('argon_font_library', wp_json_encode($lib));
+
+		//字体管理 - 区域配器
+		$region_post = isset($_POST['argon_region']) ? (array) $_POST['argon_region'] : array();
+		$region_save = array();
+		foreach (argon_get_region_defaults() as $rkey => $meta){
+			$cfg = isset($region_post[$rkey]) ? $region_post[$rkey] : array();
+			$region_save[$rkey] = array(
+				'font'   => isset($cfg['font'])   ? sanitize_text_field($cfg['font'])   : '',
+				'size'   => isset($cfg['size'])   ? sanitize_text_field($cfg['size'])   : '',
+				'weight' => isset($cfg['weight']) ? sanitize_text_field($cfg['weight']) : '',
+			);
+		}
+		update_option('argon_region_fonts', wp_json_encode($region_save));
+
+		argon_update_option('argon_font_size_base');
+		argon_update_option('argon_font_line_height');
+		argon_update_option('argon_font_letter_spacing');
+		argon_update_option('argon_custom_google_font_url'); // 保留兼容
 
 		//LazyLoad 相关
 		argon_update_option('argon_enable_lazyload');

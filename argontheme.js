@@ -2130,6 +2130,10 @@ function foldLongShuoshuo(){
 foldLongShuoshuo();
 $(document).on("click" , ".show-full-shuoshuo" , function(){
 	$(this).parent().removeClass("shuoshuo-folded").addClass("shuoshuo-unfolded");
+	// 强制浏览器重新计算布局后立即重建瀑布流
+	var el = $(this).parent()[0];
+	el && el.offsetHeight;
+	waterflowInit();
 });
 
 //颜色计算

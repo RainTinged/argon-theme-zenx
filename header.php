@@ -119,7 +119,10 @@
 	<?php
 		wp_enqueue_style("argon_css_merged", $GLOBALS['assets_path'] . "/assets/argon_css_merged.css", null, $GLOBALS['theme_version']);
 		wp_enqueue_style("style", $GLOBALS['assets_path'] . "/style.css", null, $GLOBALS['theme_version']);
-		if (get_option('argon_disable_googlefont') != 'true') {wp_enqueue_style("googlefont", "//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Noto+Serif+SC:300,600&display=swap");}
+		$google_fonts_url = argon_build_google_fonts_url();
+		if (!empty($google_fonts_url)) {
+			wp_enqueue_style("googlefont", $google_fonts_url);
+		}
 		wp_enqueue_script("argon_js_merged", $GLOBALS['assets_path'] . "/assets/argon_js_merged.js", null, $GLOBALS['theme_version']);
 		wp_enqueue_script("argonjs", $GLOBALS['assets_path'] . "/assets/js/argon.min.js", null, $GLOBALS['theme_version']);
 	?>
@@ -271,6 +274,55 @@
 	:root{
 		--card-radius: <?php echo $cardradius; ?>px;
 	}
+</style>
+<?php
+	// 1. 自定义字体的 @font-face（来自字体库）
+	$font_face_css = argon_build_font_face_css();
+	if (!empty($font_face_css)){
+		echo '<style id="argon_custom_font_face_css">' . "\n" . $font_face_css . '</style>' . "\n";
+	}
+
+	// 2. 区域配器 CSS
+	$region_fonts   = argon_get_region_fonts();
+	$font_size_base = get_option('argon_font_size_base', '16');
+	$font_line_height = get_option('argon_font_line_height', '1.7');
+	$font_letter_spacing = get_option('argon_font_letter_spacing', '0');
+
+	$base_font_family = '"Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimSun, sans-serif';
+	if (get_option('argon_font') === 'serif'){
+		$base_font_family = '"Noto Serif SC", "Source Han Serif SC", serif, system-ui';
+	}
+?>
+<style id="theme_font_css">
+	:root{
+		--font-size-base: <?php echo $font_size_base; ?>px;
+		--font-line-height: <?php echo $font_line_height; ?>;
+		--font-letter-spacing: <?php echo $font_letter_spacing; ?>em;
+		--font-heading-weight: 600;
+		--font-base: <?php echo $base_font_family; ?>;
+	}
+	<?php foreach ($region_fonts as $rkey => $cfg):
+		$rules = array();
+		$ff = trim($cfg['font']);
+		if (!empty($ff)){
+			$css_val = argon_get_font_css_by_id($ff);
+			if (!empty($css_val)){
+				$rules[] = 'font-family: ' . $css_val . ' !important;';
+			}
+		}
+		$sz = trim($cfg['size']);
+		if ($sz !== ''){
+			$rules[] = 'font-size: ' . intval($sz) . 'px !important;';
+		}
+		$wt = trim($cfg['weight']);
+		if ($wt !== ''){
+			$rules[] = 'font-weight: ' . intval($wt) . ' !important;';
+		}
+		if (empty($rules)) continue;
+		$sel = $cfg['selectors'];
+	?>
+	<?php echo $sel; ?> { <?php echo implode(' ', $rules); ?> }
+	<?php endforeach; ?>
 </style>
 
 <body <?php body_class(); ?>>

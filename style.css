@@ -3,7 +3,7 @@ Theme Name: argon
 Author: solstice23
 Author URI: https://solstice23.top/
 Description: 轻盈、简洁、美观的 Wordpress 主题
-Version: 1.3.5
+Version: 1.3.5.1
 License: GNU General Public License v3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Tags: 简约, 两栏, 侧栏在左边, 浮动侧栏, 文章目录, 自适应, 夜间模式, 可自定义
@@ -195,6 +195,15 @@ html.immersion-color.darkmode body {
 	--card-radius: 4px;
 	--font: "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica,
 		Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimSun, sans-serif;
+	--font-body: var(--font);
+	--font-heading: var(--font);
+	--font-code: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter",
+		"DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier,
+		"JetBrains Mono", "Fira Code", monospace;
+	--font-size-base: 16px;
+	--font-line-height: 1.7;
+	--font-letter-spacing: 0em;
+	--font-heading-weight: 600;
 }
 html.themecolor-toodark.darkmode {
 	--themecolor: #5e72e4 !important;
@@ -204,6 +213,9 @@ html.themecolor-toodark.darkmode {
 body {
 	background: var(--color-background) !important;
 	font-family: var(--font);
+	font-size: var(--font-size-base);
+	line-height: var(--font-line-height);
+	letter-spacing: var(--font-letter-spacing);
 	overflow: overlay;
 }
 a {
@@ -230,7 +242,7 @@ article h4,
 article h5,
 article h6,
 article strong {
-	font-weight: 600;
+	font-weight: var(--font-heading-weight);
 }
 article h1,
 article h2,
@@ -238,6 +250,7 @@ article h3,
 article h4,
 article h5,
 article h6 {
+	font-family: var(--font-heading);
 	margin-top: 18px !important;
 	margin-bottom: 15px;
 }
@@ -316,9 +329,7 @@ article .post-content a.no-hover-underline:before {
 	display: none;
 }
 html:not(.disable-codeblock-style) article pre:not(.hljs-codeblock) {
-	font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter",
-		"DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier,
-		monospace;
+	font-family: var(--font-code);
 	font-size: 14px;
 	line-height: 1.375;
 	text-align: left;
@@ -352,9 +363,7 @@ article .post-content ins {
 	border-bottom: 1px solid;
 }
 html:not(.disable-codeblock-style) article code:not([hljs-codeblock-inner]) {
-	font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter",
-		"DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier,
-		monospace;
+	font-family: var(--font-code);
 	color: #5e6687;
 	background: var(--color-border-on-foreground);
 	border: 1px solid var(--color-border-on-foreground-deeper);
@@ -2643,9 +2652,7 @@ html.darkmode .comment-upvote {
 	opacity: 0.78;
 }
 .comment-item-text pre {
-	font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter",
-		"DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier,
-		monospace;
+	font-family: var(--font-code);
 	font-size: 14px;
 	line-height: 1.375;
 	text-align: left;
