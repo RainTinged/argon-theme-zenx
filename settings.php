@@ -256,6 +256,17 @@ function themeoptions_page(){
 							</div>
 						</td>
 					</tr>
+					<tr>
+						<th><label><?php _e('点击文章卡片进入文章', 'argon');?></label></th>
+						<td>
+							<select name="argon_click_card_to_post">
+								<?php $argon_click_card_to_post = get_option('argon_click_card_to_post', 'false'); ?>
+								<option value="false" <?php if ($argon_click_card_to_post=='false'){echo 'selected';} ?>><?php _e('禁用', 'argon');?></option>
+								<option value="true" <?php if ($argon_click_card_to_post=='true'){echo 'selected';} ?>><?php _e('启用', 'argon');?></option>
+							</select>
+							<p class="description"><?php _e('开启后，点击文章卡片正文区域可直接跳转到文章内页。', 'argon');?></p>
+						</td>
+					</tr>
 				<tr><th class="subtitle"><h3><?php _e('字体', 'argon');?></h3></th></tr>
 				<tr>
 					<th><label><?php _e('默认字体族', 'argon');?></label></th>
@@ -2401,6 +2412,7 @@ function argon_update_themeoptions(){
 		argon_update_option('argon_page_layout');
 		argon_update_option('argon_article_list_layout');
 		argon_update_option('argon_enable_pangu');
+		argon_update_option('argon_click_card_to_post');
 		argon_update_option('argon_assets_path');
 		argon_update_option('argon_custom_assets_path');
 		argon_update_option('argon_comment_ua');

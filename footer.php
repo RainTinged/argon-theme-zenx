@@ -8,6 +8,29 @@
 			</div>
 		</div>
 		<script src="<?php echo $GLOBALS['assets_path']; ?>/argontheme.js?v<?php echo $GLOBALS['theme_version']; ?>"></script>
+		<?php if (get_option('argon_click_card_to_post', 'false') == 'true') { ?>
+		<script>
+		document.addEventListener("click",function(e){
+			if(!argonConfig.click_card_to_post)return;
+			var c=e.target.closest(".post-content");
+			if(!c)return;
+			if(c.id==="post_content")return;
+			if(e.target.closest("a")||e.target.closest("button"))return;
+			var el=c.parentElement;
+			while(el&&el!==document){
+				var a=el.querySelector("a.post-title,h2 a,h3 a,header a");
+				if(a&&a.href){location.href=a.href;return;}
+				el=el.parentElement;
+			}
+		},true);
+		document.addEventListener("mouseover",function(e){
+			if(!argonConfig.click_card_to_post)return;
+			var c=e.target.closest(".post-content");
+			if(!c||c.id==="post_content")return;
+			c.style.cursor="pointer";
+		},true);
+		</script>
+		<?php } ?>
 		<?php if (get_option('argon_math_render') == 'mathjax3') { /*Mathjax V3*/?>
 			<script>
 				window.MathJax = {

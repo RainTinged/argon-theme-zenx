@@ -163,7 +163,8 @@
 				hide_linenumber: <?php echo get_option('argon_code_highlight_hide_linenumber', 'false'); ?>,
 				transparent_linenumber: <?php echo get_option('argon_code_highlight_transparent_linenumber', 'false'); ?>,
 				break_line: <?php echo get_option('argon_code_highlight_break_line', 'false'); ?>
-			}
+			},
+			click_card_to_post: <?php echo (get_option('argon_click_card_to_post', 'false') == 'true' ? 'true' : 'false'); ?>
 		}
 	</script>
 	<script>
