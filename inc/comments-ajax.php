@@ -155,7 +155,7 @@ function post_comment_updatemetas($id){
 	set_user_token_cookie();
 	update_comment_meta($id, "user_token", $_COOKIE["argon_user_token"]);
 	$editHistory = array(array(
-		'content' => $_POST['comment_content_source'],
+		'content' => htmlspecialchars($_POST['comment_content_source']),
 		'time' => time(),
 		'isfirst' => true
 	));
